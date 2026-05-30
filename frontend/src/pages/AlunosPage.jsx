@@ -22,7 +22,7 @@ export default function AlunosPage() {
     const [msg, setMsg] = useState("")
 
     const [pagina, setPagina] = useState(1)
-    const pageSize = 5
+    const pageSize = 20
 
     const [modalAberto, setModalAberto] = useState(false)
 
@@ -291,8 +291,8 @@ export default function AlunosPage() {
                             <thead>
                             <tr className="text-left border-b">
                                 <th className="py-3 px-2 w-20">ID</th>
-                                <th className="py-3 px-2">Nome completo</th>
-                                <th className="py-3 px-2">Email</th>
+                                <th className="py-3 px-10">Nome completo</th>
+                                <th className="py-3 px-20">Email</th>
                                 <th className="py-3 px-2 w-44 text-center">CPF</th>
                                 <th className="py-3 px-2 w-28 text-center">Ações</th>
                             </tr>

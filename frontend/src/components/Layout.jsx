@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import { IconDashboard, IconAlunos, IconDisciplinas, IconHistorico } from "../icons/icons";
+import {IconDashboard, IconAlunos, IconDisciplinas, IconHistorico, IconProfessores} from "../icons/icons";
 import { useState } from "react"
 
 export default function Layout({ children }) {
@@ -56,6 +56,10 @@ export default function Layout({ children }) {
 
                     <NavItem to="/alunos" aberta={aberta} icon={<IconAlunos />}>
                         Alunos
+                    </NavItem>
+
+                    <NavItem to="/professores" aberta={aberta} icon={<IconProfessores />}>
+                        Professores
                     </NavItem>
 
                     <NavItem to="/disciplinas" aberta={aberta} icon={<IconDisciplinas />}>

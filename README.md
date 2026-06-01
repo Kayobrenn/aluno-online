@@ -2,29 +2,13 @@
 
 ## 📘 Descrição do Projeto
 
-Esta é uma **API REST** desenvolvida por **Kayo Brenno**, como projeto acadêmico das disciplinas de Back-End, com foco em construção de serviços RESTful utilizando **Java com Spring Boot**.
+O **Sistema Aluno Online** é uma **API REST acadêmica** desenvolvida em **Java com Spring Boot**, com o objetivo de gerenciar operações básicas de um ambiente educacional, como cadastro de alunos, professores, disciplinas, matrículas, atualização de notas, trancamento de matrícula e emissão de histórico acadêmico.
 
-O projeto foi iniciado com integração ao **PostgreSQL** e, posteriormente, evoluído na disciplina de **Back-End Avançado**, recebendo as seguintes melhorias:
+O projeto foi inicialmente desenvolvido com foco na construção de endpoints REST e persistência de dados. Posteriormente, na disciplina de **Back-End Avançado**, a API foi evoluída com **MySQL**, **Spring Security**, autenticação com **JWT** e documentação interativa com **Swagger/SpringDoc**.
 
-* Migração do banco de dados para **MySQL**
-* Implementação de **Spring Security**
-* Autenticação com **JWT (JSON Web Token)**
-* Documentação da API com **Swagger/SpringDoc**
-* Configuração do Swagger para autenticação via **Bearer Token**
-* Versionamento do script SQL da view de histórico acadêmico
+A aplicação possui rotas públicas para cadastro de usuários, login e documentação da API, enquanto os demais endpoints são protegidos e exigem autenticação via token JWT.
 
-O objetivo da API é **gerenciar o fluxo acadêmico do aluno no sistema Aluno Online**, permitindo operações como:
-
-* Cadastro e gerenciamento de **alunos** e **professores**
-* Cadastro e gerenciamento de **disciplinas**
-* **Matrícula** de alunos em disciplinas
-* **Atualização de notas** e **emissão de histórico escolar**
-* Operações de **trancamento de matrícula**
-* Cadastro de usuários
-* Login com geração de token JWT
-* Proteção de endpoints por autenticação
-
-Todo o consumo da API foi testado via **Insomnia** e **Swagger**, e o banco de dados é acompanhado pelo **DBeaver**.
+Todo o consumo da API foi validado por meio do **Insomnia** e do **Swagger**, com acompanhamento do banco de dados pelo **DBeaver**.
 
 ---
 
@@ -80,6 +64,8 @@ O fluxo de autenticação funciona da seguinte forma:
 4. A API gera e retorna um token JWT.
 5. O token deve ser enviado nas próximas requisições protegidas.
 6. O filtro de segurança valida o token antes de liberar o acesso aos controllers.
+
+A chave utilizada para assinar e validar os tokens JWT é configurada por meio da variável de ambiente `JWT_SECRET`, evitando que esse segredo fique exposto no código-fonte.
 
 ---
 
@@ -144,18 +130,37 @@ Banco utilizado:
 aluno_online
 ```
 
-Configuração principal no arquivo `application.properties`:
+A configuração principal do banco fica no arquivo `application.properties`.
+
+Para evitar que dados sensíveis, como senha do banco, fiquem escritos diretamente no código, o projeto utiliza **variáveis de ambiente**.
+
+Configuração utilizada:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/aluno_online?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo
-spring.datasource.username=root
-spring.datasource.password=sua_senha
+spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/aluno_online?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo}
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+```
+
+Variáveis de ambiente utilizadas:
+
+| Variável      | Descrição                                                                                                                          |
+| :------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `DB_URL`      | URL de conexão com o banco MySQL. Caso não seja informada, o projeto utiliza a URL padrão configurada no `application.properties`. |
+| `DB_USERNAME` | Usuário do banco de dados. Caso não seja informado, o valor padrão será `root`.                                                    |
+| `DB_PASSWORD` | Senha do banco de dados MySQL.                                                                                                     |
+
+Exemplo de configuração local:
+
+```txt
+DB_USERNAME=root
+DB_PASSWORD=sua_senha_do_mysql
 ```
 
 As tabelas principais são criadas automaticamente pelo **Hibernate**, a partir das entidades do projeto.
@@ -169,6 +174,7 @@ Principais tabelas utilizadas:
 * `usuarios`
 
 ---
+
 
 ## 🧾 View do Histórico Acadêmico
 
@@ -265,15 +271,19 @@ Base: `/matriculas`
 git clone URL_DO_REPOSITORIO
 ```
 
+---
+
 ### 2. Acessar a pasta da API
 
 ```bash
 cd api
 ```
 
-### 3. Configurar o banco de dados
+---
 
-Crie ou utilize o banco MySQL:
+### 3. Criar o banco de dados MySQL
+
+Crie ou utilize o banco MySQL chamado `aluno_online`.
 
 ```sql
 CREATE DATABASE IF NOT EXISTS aluno_online
@@ -281,17 +291,72 @@ CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 ```
 
-Depois, configure o arquivo:
+---
+
+### 4. Configurar variáveis de ambiente
+
+O projeto utiliza variáveis de ambiente para evitar que informações sensíveis, como senha do banco e chave JWT, fiquem escritas diretamente no código-fonte.
+
+Variáveis utilizadas:
+
+| Variável      | Descrição                                                                                              |
+| :------------ | ------------------------------------------------------------------------------------------------------ |
+| `DB_URL`      | URL de conexão com o banco MySQL. É opcional, pois existe um valor padrão no `application.properties`. |
+| `DB_USERNAME` | Usuário do banco MySQL. Caso não seja informado, o valor padrão será `root`.                           |
+| `DB_PASSWORD` | Senha do banco MySQL.                                                                                  |
+| `JWT_SECRET`  | Chave secreta utilizada para gerar e validar os tokens JWT.                                            |
+
+Exemplo de configuração local:
 
 ```txt
-src/main/resources/application.properties
+DB_USERNAME=root
+DB_PASSWORD=sua_senha_do_mysql
+JWT_SECRET=sua_chave_secreta_jwt
 ```
 
-com usuário e senha do seu MySQL.
+No IntelliJ IDEA, as variáveis podem ser configuradas em:
 
-### 4. Executar a aplicação
+```txt
+Run > Edit Configurations > Environment variables
+```
 
-O projeto pode ser executado pelo IntelliJ IDEA ou pelo Maven:
+Exemplo em uma única linha no IntelliJ:
+
+```txt
+DB_USERNAME=root;DB_PASSWORD=sua_senha_do_mysql;JWT_SECRET=sua_chave_secreta_jwt
+```
+
+Caso deseje sobrescrever também a URL do banco, adicione:
+
+```txt
+DB_URL=jdbc:mysql://localhost:3306/aluno_online?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo
+```
+
+---
+
+### 5. Conferir o `application.properties`
+
+O arquivo `src/main/resources/application.properties` deve utilizar as variáveis de ambiente:
+
+```properties
+spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/aluno_online?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo}
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+
+api.security.token.secret=${JWT_SECRET}
+```
+
+---
+
+### 6. Executar a aplicação
+
+O projeto pode ser executado pelo IntelliJ IDEA, executando a classe principal da aplicação, ou pelo Maven:
 
 ```bash
 mvn spring-boot:run
@@ -303,13 +368,52 @@ A API será executada em:
 http://localhost:8080
 ```
 
-### 5. Executar o script da view
+Ao subir a aplicação pela primeira vez, o Hibernate cria automaticamente as tabelas principais no banco MySQL a partir das entidades do projeto.
 
-Caso o banco seja recriado, execute o script:
+---
+
+### 7. Executar o script da view
+
+Após a aplicação criar as tabelas no banco, execute o script da view do histórico acadêmico:
 
 ```txt
 api/src/main/resources/sql/create-view-historico-mysql.sql
 ```
+
+Esse script cria a view `vw_historico_aluno`, utilizada pelo endpoint de histórico acadêmico.
+
+---
+
+### 8. Acessar a documentação da API
+
+Com o projeto em execução, acesse o Swagger em:
+
+```txt
+http://localhost:8080/swagger-ui/index.html
+```
+
+O JSON da documentação OpenAPI pode ser acessado em:
+
+```txt
+http://localhost:8080/v3/api-docs
+```
+
+---
+
+### 9. Testar o fluxo de autenticação
+
+Após executar o projeto, o fluxo básico de teste é:
+
+1. Cadastrar um usuário em `POST /cadastros`.
+2. Fazer login em `POST /login`.
+3. Copiar o token JWT retornado.
+4. Informar o token no Swagger pelo botão **Authorize** ou no Insomnia pelo header:
+
+```txt
+Authorization: Bearer token_jwt
+```
+
+5. Testar as rotas protegidas da API.
 
 ---
 
@@ -780,20 +884,6 @@ Foram realizados os seguintes testes após a evolução do projeto:
 * Configuração do botão **Authorize** no Swagger
 * Teste de endpoint protegido diretamente pelo Swagger
 * Teste do endpoint de histórico acadêmico
-
----
-
-## 🧾 Commits Principais da Evolução
-
-Os principais commits realizados na branch de implementação foram:
-
-```txt
-chore: migrate database from postgresql to mysql
-docs: add swagger documentation
-feat: add jwt authentication with spring security
-docs: configure swagger jwt authentication
-chore: add mysql history view script
-```
 
 ---
 
